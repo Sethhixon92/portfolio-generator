@@ -1,7 +1,10 @@
+const fs = require('fs');
 const inquirer = require('inquirer');
+const generatePage = require('./src/page-template.js');
 
 const promptUser = () => {
-return inquirer.prompt([
+ return inquirer
+ .prompt([
   {
     type: "input",
     name: "name",
@@ -20,7 +23,7 @@ return inquirer.prompt([
  ]);
 };
 
-const promptProject = portfolioData=> {
+const promptProject = portfolioData => {
   console.log(`
   =================
   Add a New Project
@@ -30,7 +33,8 @@ const promptProject = portfolioData=> {
   if (!portfolioData.projects) {
   portfolioData.projects = [];
   }
-   return inquirer.prompt([
+   return inquirer
+   .prompt([
      {
        type:"input",
        name:"name",
@@ -58,24 +62,17 @@ const promptProject = portfolioData=> {
        message: "Would you like to enter another project?",
        default: false
      }
-     .then(projectData => {
-      portfolioData.projects.push(projectData);
-    });
-   ]);
+   ])
+   .then(projectData => {
+    portfolioData.projects.push(projectData);
+    if (projectData.confirmAddProject) {
+    return promptProject(portfolioData);
+    } else {
+    return portfolioData;
+    }
+  })
 };
+
 promptUser()
-  .then(answers => console.log(answers))
   .then(promptProject)
   .then(projectAnswers => console.log(projectAnswers));
-//const fs = require('fs');
-//const generatePage = require('./src/page-template.js');
-
-//const pageHTML = generatePage(name, github);
-
-//const [name, github] = profileDataArgs;
-
-//fs.writeFile('index.html', generatePage(name, github), err => {
-  //if (err) throw err;
-
-  //console.log('Portfolio complete! Check out index.html to see the output!');
-//});
